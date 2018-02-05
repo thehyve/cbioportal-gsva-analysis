@@ -74,12 +74,6 @@ if (n_bootstrap > 0){
     # Resample gene sets from the same distribution with function in separate R file
     new_genesets <- sample_geneset_from_dist(genesets)
     
-    # method that does not use the same distribution but grabs random sets:
-    # all_genes_geneset <- unique(as.vector(unlist(genesets)))
-    # for (geneset in 1:length(genesets)){
-    # new_genesets[geneset][[1]] <- c(sample(all_genes_geneset, length(genesets[geneset][[1]]), replace=FALSE))
-    # }
-    
     # Calculate GSVA scores for bootstrapped gene sets
     gene_resamp_gsva <- gsva(as.matrix(expr_norm_high), new_genesets, method="gsva", parallel.sz=n_cores, parallel.type="SOCK")
     results <- data.frame(matrix(NA, nrow=nrow(full_set_gsva_result$es.obs), ncol=ncol(full_set_gsva_result$es.obs)))
