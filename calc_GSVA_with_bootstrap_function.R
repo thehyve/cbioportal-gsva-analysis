@@ -53,7 +53,7 @@ full_set_gsva_result <- gsva(as.matrix(expr_norm_high), genesets, method="gsva",
 cat(paste0("\n\n---> Output file original GSVA written to ", prefix_out, "gsva_scores.txt \n\n"))
 colnames(full_set_gsva_result$es.obs) <- gsub("\\.", "-", colnames(full_set_gsva_result$es.obs))
 scores = cbind(geneset_id = rownames(full_set_gsva_result$es.obs), full_set_gsva_result$es.obs)
-write.table(scores, paste0(prefix_out, "gsva_scores.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
+write.table(scores, paste0(prefix_out, "data_gsva_scores.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
 
 # If the user indicated that bootstraps should be done, do bootstrapping
 if (n_bootstrap > 0){
@@ -120,10 +120,10 @@ if (n_bootstrap > 0){
   }
   
   # Write p-value results to file
-  cat(paste0("\n\n---> Output file bootstrap written to ", prefix_out, "gsva_pvalues.txt\n\n"))
+  cat(paste0("\n\n---> Output file bootstrap written to ", prefix_out, "data_gsva_pvalues.txt\n\n"))
   colnames(pvalues_calc) <- gsub("\\.", "-", colnames(pvalues_calc))
   pvalues_with_genesetid = cbind(geneset_id = rownames(pvalues_calc), pvalues_calc)
-  write.table(pvalues_with_genesetid, paste0(prefix_out, "gsva_pvalues.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
+  write.table(pvalues_with_genesetid, paste0(prefix_out, "data_gsva_pvalues.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
   
 }
 
@@ -145,8 +145,8 @@ datatype: GSVA-SCORE
 stable_id: gsva_scores
 source_stable_id: ", source_stable_id, "
 profile_name: GSVA scores
-profile_description: GSVA scores for MSigDB v6.1 genesets calculated with GSVA version ", gsva_version,", R version ", r_version, "
-data_filename: gsva_scores.txt
+profile_description: GSVA scores for MSigDB v6.1 genesets calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+data_filename: data_gsva_scores.txt
 geneset_def_version: msigdb_v6.1")
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
 
@@ -160,8 +160,8 @@ datatype: P-VALUE
 stable_id: gsva_pvalues
 source_stable_id: gsva_scores
 profile_name: GSVA p-values
-profile_description: P-values calculated with boostrapping method (see GSVA-bootstrap-method.md in geneset folder)(n=", n_bootstrap, ").
-data_filename: gsva_pvalues.txt
+profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+data_filename: data_gsva_pvalues.txt
 geneset_def_version: msigdb_v6.1")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 } else {
@@ -169,7 +169,7 @@ geneset_def_version: msigdb_v6.1")
   dummy_pvalues <- (full_set_gsva_result$es.obs * 0) + 0.01
   gsva_pvalues <- data.frame("geneset_id" = rownames(full_set_gsva_result$es.obs), dummy_pvalues, check.names = F)
   colnames(gsva_pvalues) <- gsub("\\.", "-", colnames(gsva_pvalues))
-  write.table(gsva_pvalues, paste0(prefix_out, "gsva_pvalues.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
+  write.table(gsva_pvalues, paste0(prefix_out, "data_gsva_pvalues.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
   
   # create also meta p-value file
   meta_pvalues <- paste0("cancer_study_identifier: ", study_id, "
@@ -178,15 +178,15 @@ datatype: P-VALUE
 stable_id: gsva_pvalues
 source_stable_id: gsva_scores
 profile_name: GSVA p-values
-profile_description: Dummy P-values, no bootstrap done.
-data_filename: gsva_pvalues.txt
+profile_description: Dummy P-values, no bootstrap done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+data_filename: data_gsva_pvalues.txt
 geneset_def_version: msigdb_v6.1")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 }
 
 case_list <- paste0(c("cancer_study_identifier: ", study_id, "
 stable_id: ", study_id, "_gsva_scores
-case_list_name: Tumor Samples with GSVA data
+case_list_name: Samples with GSVA data
 case_list_description: All samples with GSVA data
 case_list_category: all_cases_with_gsva_data
 case_list_ids:    ", paste0(colnames(full_set_gsva_result$es.obs), collapse = "\t")), collapse = "")
