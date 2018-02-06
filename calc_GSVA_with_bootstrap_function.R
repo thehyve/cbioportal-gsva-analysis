@@ -71,6 +71,7 @@ if (n_bootstrap > 0){
   source("func_sampling_same_dist.R")
   
   for (i in 1:n_bootstrap){
+    cat(paste0("\n\n---> Bootstrap Number: ", i))
     # Resample gene sets from the same distribution with function in separate R file
     new_genesets <- sample_geneset_from_dist(genesets)
     
