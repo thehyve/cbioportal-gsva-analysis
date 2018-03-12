@@ -36,21 +36,28 @@ n_bootstrap <- as.numeric(c_args[6])
 
 # Load and normalize expression file
 cat(paste0("\n\n---> Load expression file ", expr_file, " and geneset file ",  geneset_file, "\n\n"))
-expr <- read.delim(expr_file, sep="\t", header=T, row.names=2, quote="")
-
-# expr <- expr[,-1] # Use in case of entrez gene ids
-# Use in case of hugo symbols the following:
-expr <- expr[!duplicated(expr[,1]),]
-expr <- expr[!is.na(expr[,1]),]
-row.names(expr) <- expr[,1]
-expr <- expr[,-1]
-
-expr_norm <- log2(expr + 1)
-mexp <- rowMeans(expr_norm)
-expr_norm_high <- expr_norm[mexp > 1, ]
 
 # Load genesets, geneset file should be in gmt format
 genesets <- read.gmt(geneset_file)  # Will put genesets in named list
+
+# Load expression file
+expr <- read.delim(expr_file, sep="\t", header=T, row.names=2, quote="")
+
+# Check if we need to remove the hugo or entrez gene columns
+if (length(grep("[A-Z]", genesets[1], perl=TRUE, value=TRUE)) == 0) {
+  expr <- expr[,-1] # Use in case of entrez gene ids
+} else {
+  # in case of hugo symbols:
+  expr <- expr[!duplicated(expr[,1]),]
+  expr <- expr[!is.na(expr[,1]),]
+  row.names(expr) <- expr[,1]
+  expr <- expr[,-1]
+}
+
+# Normalize expression values and only keep genes with at least a minimum expression of 1
+expr_norm <- log2(expr + 1)
+mexp <- rowMeans(expr_norm)
+expr_norm_high <- expr_norm[mexp > 1, ]
 
 # Calculate original gene set scores
 cat("\n\n---> Calculate GSVA scores original genesets with ", n_cores," number of cores\n\n")
