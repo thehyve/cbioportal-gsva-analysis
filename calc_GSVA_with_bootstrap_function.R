@@ -37,7 +37,14 @@ n_bootstrap <- as.numeric(c_args[6])
 # Load and normalize expression file
 cat(paste0("\n\n---> Load expression file ", expr_file, " and geneset file ",  geneset_file, "\n\n"))
 expr <- read.delim(expr_file, sep="\t", header=T, row.names=2, quote="")
+
+# expr <- expr[,-1] # Use in case of entrez gene ids
+# Use in case of hugo symbols the following:
+expr <- expr[!duplicated(expr[,1]),]
+expr <- expr[!is.na(expr[,1]),]
+row.names(expr) <- expr[,1]
 expr <- expr[,-1]
+
 expr_norm <- log2(expr + 1)
 mexp <- rowMeans(expr_norm)
 expr_norm_high <- expr_norm[mexp > 1, ]
@@ -71,7 +78,7 @@ if (n_bootstrap > 0){
   source("func_sampling_same_dist.R")
   
   for (i in 1:n_bootstrap){
-    cat(paste0("\n\n---> Bootstrap Number: ", i))
+    cat(paste0("\n\n---> Bootstrap Number: ", i, " \n"))
     # Resample gene sets from the same distribution with function in separate R file
     new_genesets <- sample_geneset_from_dist(genesets)
     
@@ -140,9 +147,9 @@ datatype: GSVA-SCORE
 stable_id: gsva_scores
 source_stable_id: ", source_stable_id, "
 profile_name: GSVA scores
-profile_description: GSVA scores for MSigDB v6.1 genesets calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+profile_description: GSVA scores for informative signatures (defined by Cantini et al., NPJ Systems Biology and Applications (2017))(see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_scores.txt
-geneset_def_version: msigdb_v6.1")
+geneset_def_version: infosigmap")
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
 
 # In case bootstrapping is done make meta file which indicates the amount of
@@ -157,7 +164,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: msigdb_v6.1")
+geneset_def_version: infosigmap")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 } else {
   # create dummy p-values instead of empty file
@@ -175,7 +182,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: Dummy P-values, no bootstrap done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: msigdb_v6.1")
+geneset_def_version: infosigmap")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 }
 
