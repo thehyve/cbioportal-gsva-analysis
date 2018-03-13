@@ -22,17 +22,19 @@ library("GSVA") # To perform GSVA analysis
 # Get arguments from command: 
 # [1] name (and path) of expression file
 # [2] name (and path) of geneset file
-# [3] name (and path) of meta expression file
-# [4] prefix for name outputfile
-# [5] number of cores to use for the analysis
-# [6] number of bootstraps for the analysis
+# [3] name of geneset version in cBioPortal
+# [4] name (and path) of meta expression file
+# [5] prefix for name outputfile
+# [6] number of cores to use for the analysis
+# [7] number of bootstraps for the analysis
 c_args <- commandArgs(TRUE)
 expr_file <- c_args[1]
 geneset_file <- c_args[2]
-meta_expression_file <- c_args[3]
-prefix_out <- c_args[4]
-n_cores <- as.numeric(c_args[5])
-n_bootstrap <- as.numeric(c_args[6])
+geneset_def_version <- c_args[3]
+meta_expression_file <- c_args[4]
+prefix_out <- c_args[5]
+n_cores <- as.numeric(c_args[6])
+n_bootstrap <- as.numeric(c_args[7])
 
 # Load and normalize expression file
 cat(paste0("\n\n---> Load expression file ", expr_file, " and geneset file ",  geneset_file, "\n\n"))
@@ -156,7 +158,7 @@ source_stable_id: ", source_stable_id, "
 profile_name: GSVA scores
 profile_description: GSVA scores for MSigDB v6.1 collections Hallmark and C6 (see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_scores.txt
-geneset_def_version: msigdb")
+geneset_def_version: ", geneset_def_version)
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
 
 # In case bootstrapping is done make meta file which indicates the amount of
@@ -171,7 +173,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: msigdb")
+geneset_def_version: ", geneset_def_version)
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 } else {
   # create dummy p-values instead of empty file
@@ -189,7 +191,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: Dummy P-values, no bootstrap done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: msigdb")
+geneset_def_version: ", geneset_def_version)
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 }
 
