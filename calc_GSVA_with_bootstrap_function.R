@@ -154,9 +154,9 @@ datatype: GSVA-SCORE
 stable_id: gsva_scores
 source_stable_id: ", source_stable_id, "
 profile_name: GSVA scores
-profile_description: GSVA scores for informative signatures (defined by Cantini et al., NPJ Systems Biology and Applications (2017))(see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+profile_description: GSVA scores for MSigdb v6.1 collections Hallmark and C6 (see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_scores.txt
-geneset_def_version: infosigmap")
+geneset_def_version: msigdb")
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
 
 # In case bootstrapping is done make meta file which indicates the amount of
@@ -171,7 +171,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: infosigmap")
+geneset_def_version: msigdb")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 } else {
   # create dummy p-values instead of empty file
@@ -189,7 +189,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: Dummy P-values, no bootstrap done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
-geneset_def_version: infosigmap")
+geneset_def_version: msigdb")
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 }
 
