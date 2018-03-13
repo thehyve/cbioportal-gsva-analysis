@@ -154,7 +154,7 @@ datatype: GSVA-SCORE
 stable_id: gsva_scores
 source_stable_id: ", source_stable_id, "
 profile_name: GSVA scores
-profile_description: GSVA scores for MSigdb v6.1 collections Hallmark and C6 (see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+profile_description: GSVA scores for MSigDB v6.1 collections Hallmark and C6 (see also https://github.com/cBioPortal/datahub/tree/master/public/", study_id, "/genesets) calculated with GSVA version ", gsva_version,", R version ", r_version, ". See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_scores.txt
 geneset_def_version: msigdb")
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
