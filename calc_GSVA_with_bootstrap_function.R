@@ -182,6 +182,7 @@ source_stable_id: gsva_scores
 profile_name: GSVA p-values
 profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
+show_profile_in_analysis_tab: true
 geneset_def_version: ", geneset_def_version)
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
 } else {
