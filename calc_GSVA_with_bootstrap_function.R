@@ -215,7 +215,7 @@ write(case_list, paste0(prefix_out, "cases_GSVA.txt"))
 
 cat(paste0("\n\n---> Meta files written to ", prefix_out, "meta_gsva_scores.txt, ", prefix_out, "meta_gsva_pvalues.txt and ", prefix_out, "cases_GSVA.txt\n\n"))
 
-save.image(file=paste0(prefix_out, "GSVA_calc.RData"))
+#save.image(file=paste0(prefix_out, "GSVA_calc.RData"))
 
-cat(paste0("\n\n---> R environment variables written to ", prefix_out, "GSVA_calc.RData\n\n"))
+#cat(paste0("\n\n---> R environment variables written to ", prefix_out, "GSVA_calc.RData\n\n"))
 
