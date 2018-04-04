@@ -117,19 +117,25 @@ if (n_bootstrap > 0){
       # Get all scores from each sample and gene sets for the amount of bootstraps
       bootstrap_scores <- sapply(list_scores, '[', geneset, sample) 
       
-      # Positive and negative scores needed separatly for calculation
-      pos_scores <- bootstrap_scores[which(bootstrap_scores >= 0)]
-      neg_scores <- bootstrap_scores[which(bootstrap_scores < 0)]
-      if (full_set_gsva_result$es.obs[geneset, sample] >= 0) {
-        pvalues_calc[geneset,sample] <- sum(pos_scores >= full_set_gsva_result$es.obs[geneset, sample]) / (length(pos_scores) +1)
-      } else {
-        pvalues_calc[geneset,sample] <- sum(neg_scores <= full_set_gsva_result$es.obs[geneset, sample]) / (length(neg_scores) +1)
-      }
+      # Check how many of the absolute values from the bootstrapped gene sets are better
+      # than the calculated score for the original gene set
+      # (-0.4 is still stronger than 0.2 but with previous method was not calculated)
+      pvalues_calc[geneset,sample] <- sum(abs(bootstrap_scores) >= full_set_gsva_result$es.obs[geneset, sample]) / (n_bootstrap +1)
 
-      # In case no scores are above (or below in case of negative) the original, set the pvalue to the lowest possible
-      if (pvalues_calc[geneset,sample] == 0){
-        pvalues_calc[geneset,sample] = 1/n_bootstrap
-      }
+      # PREVIOUS METHOD USED, CHANGED TO CHECKING THE ABSOLUTE VALUES
+      ## Positive and negative scores needed separatly for calculation
+      #pos_scores <- bootstrap_scores[which(bootstrap_scores >= 0)]
+      #neg_scores <- bootstrap_scores[which(bootstrap_scores < 0)]
+      #if (full_set_gsva_result$es.obs[geneset, sample] >= 0) {
+      #  pvalues_calc[geneset,sample] <- sum(pos_scores >= full_set_gsva_result$es.obs[geneset, sample]) / (length(pos_scores) +1)
+      #} else {
+      #  pvalues_calc[geneset,sample] <- sum(neg_scores <= full_set_gsva_result$es.obs[geneset, sample]) / (length(neg_scores) +1)
+      #}
+
+      ## In case no scores are above (or below in case of negative) the original, set the pvalue to the lowest possible
+      #if (pvalues_calc[geneset,sample] == 0){
+      #  pvalues_calc[geneset,sample] = 1/n_bootstrap
+      #}
     }
   }
   
