@@ -121,7 +121,7 @@ if (n_resampling > 0){
       # than the calculated score for the original gene set
       # (-0.4 is still stronger than 0.2 but with previous method was not taken into account)
       # We add 1 to both sides of the division to account for the real GSVA value, and solve that you would never divide by 0 or get a pvalue of 0.
-      pvalues_calc[geneset,sample] <- sum(abs(resampled_scores) >= abs(full_set_gsva_result$es.obs[geneset, sample])) + 1 / n_resampling + 1
+      pvalues_calc[geneset,sample] <- (sum(abs(resampled_scores) >= abs(full_set_gsva_result$es.obs[geneset, sample])) + 1) / (n_resampling + 1)
 
       # PREVIOUS METHOD USED, CHANGED TO CHECKING THE ABSOLUTE VALUES
       ## Positive and negative scores needed separatly for calculation
