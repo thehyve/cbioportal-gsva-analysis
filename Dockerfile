@@ -12,5 +12,5 @@ RUN R -e "install.packages(c('qusage', 'GSEABase', 'GSVA'), repos='http://biocon
 COPY . /usr/local/src/scripts/
 WORKDIR /usr/local/src/scripts/
 
-RUN ["chmod", "+x", "calc_GSVA_with_bootstrap_function.R"]
+RUN ["chmod", "+x", "calc_GSVA_with_resampling.R"]
 RUN ["chmod", "+x", "func_sampling_same_dist.R"]

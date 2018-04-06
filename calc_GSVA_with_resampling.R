@@ -5,7 +5,7 @@
 ## Input: expression file (rows: genes, columns: samples),   ##
 ##		    meta expression file, geneset file (in gmt),       ##
 ##		    number of cores to use for analysis, number of     ##
-## 		    bootstraps to use for analysis, prefix for output  ##
+## 		    resamplings to use for analysis, prefix for output ##
 ## 		    files (with desired path)                          ##
 ## Output: GSVA score and p-value file (genesets in rows,    ##
 ##		     samples in columns), meta score and p-value file, ##
@@ -26,7 +26,7 @@ library("GSVA") # To perform GSVA analysis
 # [4] name (and path) of meta expression file
 # [5] prefix for name outputfile
 # [6] number of cores to use for the analysis
-# [7] number of bootstraps for the analysis
+# [7] number of resamplings to do for the analysis
 c_args <- commandArgs(TRUE)
 expr_file <- c_args[1]
 geneset_file <- c_args[2]
@@ -34,7 +34,7 @@ geneset_def_version <- c_args[3]
 meta_expression_file <- c_args[4]
 prefix_out <- c_args[5]
 n_cores <- as.numeric(c_args[6])
-n_bootstrap <- as.numeric(c_args[7])
+n_resampling <- as.numeric(c_args[7])
 
 # Change this text in case you are using different genesets
 profile_descrip_meta_gsva_scores <- paste0("GSVA scores for a selection of test gene sets from MSigDB v6.1")
@@ -74,31 +74,31 @@ colnames(full_set_gsva_result$es.obs) <- gsub("\\.", "-", colnames(full_set_gsva
 scores = cbind(geneset_id = rownames(full_set_gsva_result$es.obs), full_set_gsva_result$es.obs)
 write.table(scores, paste0(prefix_out, "data_gsva_scores.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
 
-# If the user indicated that bootstraps should be done, do bootstrapping
-if (n_bootstrap > 0){
-  cat("\n\n---> Randomize gene sets and calculate bootstrap scores")
+# If the user indicated that resamplings should be done, do resamplings
+if (n_resampling > 0){
+  cat("\n\n---> Randomize gene sets and calculate resampling scores")
   # Create empty list for new genesets
   new_genesets <- vector("list", length(genesets))
   names(new_genesets) <- names(genesets)
   
-  # Create list to add all bootstrap scores separatly
-  list_scores <- vector("list", n_bootstrap)
-  names(list_scores) <- paste0("bootstrap_", 1:n_bootstrap)
+  # Create list to add all resampled scores separatly
+  list_scores <- vector("list", n_resampling)
+  names(list_scores) <- paste0("resampling_", 1:n_resampling)
   all_genes_geneset <- unique(as.vector(unlist(genesets)))
   
   # source function to resample gene sets
   source("func_sampling_same_dist.R")
   
-  for (i in 1:n_bootstrap){
-    cat(paste0("\n\n---> Bootstrap Number: ", i, " \n"))
+  for (i in 1:n_resampling){
+    cat(paste0("\n\n---> Resampling Number: ", i, " \n"))
     # Resample gene sets from the same distribution with function in separate R file
     new_genesets <- sample_geneset_from_dist(genesets)
     
-    # Calculate GSVA scores for bootstrapped gene sets
+    # Calculate GSVA scores for resampled gene sets
     gene_resamp_gsva <- gsva(as.matrix(expr_norm_high), new_genesets, method="gsva", parallel.sz=n_cores, parallel.type="SOCK")
     results <- data.frame(matrix(NA, nrow=nrow(full_set_gsva_result$es.obs), ncol=ncol(full_set_gsva_result$es.obs)))
     
-    # Save 'bootstrap' scores to list with dataframes (size of dataframes are the same and therefore can complete be added to list)
+    # Save 'resampled' scores to list with dataframes (size of dataframes are the same and therefore can complete be added to list)
     rownames(results) = rownames(full_set_gsva_result$es.obs)
     colnames(results) = colnames(full_set_gsva_result$es.obs)
     results[rownames(gene_resamp_gsva$es.obs),] <- gene_resamp_gsva$es.obs
@@ -110,17 +110,17 @@ if (n_bootstrap > 0){
   rownames(pvalues_calc) = rownames(full_set_gsva_result$es.obs)
   colnames(pvalues_calc) = colnames(full_set_gsva_result$es.obs)
   
-  # Calculating p-values with bootstrapped values
+  # Calculating p-values with resampled values
   cat("\n\n---> Calculate pvalues")
   for (sample in 1:ncol(pvalues_calc)){
     for (geneset in 1:nrow(pvalues_calc)){
-      # Get all scores from each sample and gene sets for the amount of bootstraps
-      bootstrap_scores <- sapply(list_scores, '[', geneset, sample) 
+      # Get all scores from each sample and gene sets for the amount of resamplings
+      resampled_scores <- sapply(list_scores, '[', geneset, sample) 
       
-      # Check how many of the absolute values from the bootstrapped gene sets are better
+      # Check how many of the absolute values from the resampled gene sets are better
       # than the calculated score for the original gene set
       # (-0.4 is still stronger than 0.2 but with previous method was not taken into account)
-      pvalues_calc[geneset,sample] <- sum(abs(bootstrap_scores) >= abs(full_set_gsva_result$es.obs[geneset, sample])) / n_bootstrap
+      pvalues_calc[geneset,sample] <- sum(abs(resampled_scores) >= abs(full_set_gsva_result$es.obs[geneset, sample])) / n_resampling
 
       # PREVIOUS METHOD USED, CHANGED TO CHECKING THE ABSOLUTE VALUES
       ## Positive and negative scores needed separatly for calculation
@@ -140,7 +140,7 @@ if (n_bootstrap > 0){
   }
   
   # Write p-value results to file
-  cat(paste0("\n\n---> Output file bootstrap written to ", prefix_out, "data_gsva_pvalues.txt\n\n"))
+  cat(paste0("\n\n---> Output file resampling written to ", prefix_out, "data_gsva_pvalues.txt\n\n"))
   colnames(pvalues_calc) <- gsub("\\.", "-", colnames(pvalues_calc))
   pvalues_with_genesetid = cbind(geneset_id = rownames(pvalues_calc), pvalues_calc)
   write.table(pvalues_with_genesetid, paste0(prefix_out, "data_gsva_pvalues.txt"), quote = F, sep = "\t", col.names = T, row.names = F)
@@ -171,17 +171,17 @@ show_profile_in_analysis_tab: true
 geneset_def_version: ", geneset_def_version)
 write(meta_scores, paste0(prefix_out, "meta_gsva_scores.txt"))
 
-# In case bootstrapping is done make meta file which indicates the amount of
-# bootstraps that were done, otherwise create a dummy pvalue file and
+# In case resampling is done make meta file which indicates the amount of
+# resaplings that were done, otherwise create a dummy pvalue file and
 # indicate this in the meta p-value file
-if (n_bootstrap > 0){
+if (n_resampling > 0){
   meta_pvalues <- paste0("cancer_study_identifier: ", study_id, "
 genetic_alteration_type: GENESET_SCORE
 datatype: P-VALUE
 stable_id: gsva_pvalues
 source_stable_id: gsva_scores
 profile_name: GSVA p-values
-profile_description: P-values calculated with permutation test (n=", n_bootstrap, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+profile_description: P-values calculated with permutation test (n=", n_resampling, ") based on GSVA scores of random gene sets. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
 geneset_def_version: ", geneset_def_version)
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
@@ -199,7 +199,7 @@ datatype: P-VALUE
 stable_id: gsva_pvalues
 source_stable_id: gsva_scores
 profile_name: GSVA p-values
-profile_description: Dummy P-values, no bootstrap done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
+profile_description: Dummy P-values, no resampling done. See https://github.com/thehyve/cbioportal-gsva-analysis for documentation and R code.
 data_filename: data_gsva_pvalues.txt
 geneset_def_version: ", geneset_def_version)
   write(meta_pvalues, paste0(prefix_out, "meta_gsva_pvalues.txt"))
