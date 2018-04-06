@@ -206,7 +206,7 @@ geneset_def_version: ", geneset_def_version)
 }
 
 # Create case list file and if necessary also case lists dir
-dir.create(file.path(prefix_out, "case_lists"))
+dir.create(file.path(dirname(paste0(prefix_out, "meta_gsva_pvalues.txt")), "case_lists"))
 
 case_list <- paste0(c("cancer_study_identifier: ", study_id, "
 stable_id: ", study_id, "_gsva_scores
@@ -214,7 +214,7 @@ case_list_name: Samples with GSVA data
 case_list_description: All samples with GSVA data
 case_list_category: all_cases_with_gsva_data
 case_list_ids:    ", paste0(colnames(full_set_gsva_result$es.obs), collapse = "\t")), collapse = "")
-write(case_list, paste0(prefix_out, "case_lists/cases_GSVA.txt"))
+write(case_list, paste0(dirname(paste0(prefix_out, "meta_gsva_pvalues.txt")), "/case_lists/cases_GSVA.txt"))
 
 cat(paste0("\n\n---> Meta files written to ", prefix_out, "meta_gsva_scores.txt, ", prefix_out, "meta_gsva_pvalues.txt and ", prefix_out, "case_lists/cases_GSVA.txt\n\n"))
 
