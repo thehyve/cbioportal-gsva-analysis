@@ -120,7 +120,7 @@ if (n_bootstrap > 0){
       # Check how many of the absolute values from the bootstrapped gene sets are better
       # than the calculated score for the original gene set
       # (-0.4 is still stronger than 0.2 but with previous method was not taken into account)
-      pvalues_calc[geneset,sample] <- sum(abs(bootstrap_scores) >= full_set_gsva_result$es.obs[geneset, sample]) / n_bootstrap
+      pvalues_calc[geneset,sample] <- sum(abs(bootstrap_scores) >= abs(full_set_gsva_result$es.obs[geneset, sample])) / n_bootstrap
 
       # PREVIOUS METHOD USED, CHANGED TO CHECKING THE ABSOLUTE VALUES
       ## Positive and negative scores needed separatly for calculation
