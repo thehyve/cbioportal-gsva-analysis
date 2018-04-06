@@ -37,7 +37,7 @@ n_cores <- as.numeric(c_args[6])
 n_bootstrap <- as.numeric(c_args[7])
 
 # Change this text in case you are using different genesets
-profile_descrip_meta_gsva_scores <- paste0("GSVA scores for MSigDB v6.1 collections Hallmark and C6")
+profile_descrip_meta_gsva_scores <- paste0("GSVA scores for a selection of test gene sets from MSigDB v6.1")
 
 # Load and normalize expression file
 cat(paste0("\n\n---> Load expression file ", expr_file, " and geneset file ",  geneset_file, "\n\n"))
