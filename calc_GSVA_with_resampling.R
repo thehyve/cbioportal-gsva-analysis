@@ -139,7 +139,10 @@ if (n_resampling > 0){
       #}
     }
   }
-  
+
+  # Round up pvalue to three decimals
+  pvalues_calc <- round(pvalues_calc, 3)
+
   # Write p-value results to file
   cat(paste0("\n\n---> Output file resampling written to ", prefix_out, "data_gsva_pvalues.txt\n\n"))
   colnames(pvalues_calc) <- gsub("\\.", "-", colnames(pvalues_calc))
