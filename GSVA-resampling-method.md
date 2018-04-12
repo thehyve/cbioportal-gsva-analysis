@@ -1,11 +1,7 @@
-## Bootstrapping gene sets
-Gene sets are resampled with the same size as the initial gene sets. Genes from the original gene sets are used to fill the bootstrap gene sets, according to the same distribution as the genes in the original gene sets. When genes are used in a bootstrap gene sets they will be removed from the full list of genes and will not be used again (resampling without replacement). Within the same gene sets no duplicate genes are allowed, in different gene sets the same genes can be used.
-
+## Resampling gene sets
+Gene sets are resampled with the same size as the initial gene sets. Only genes from the original gene sets are used to fill the resampled gene sets, following the same distribution as genes in the original gene sets. When genes are used in a resampled gene set, they will be removed from the full list of genes and will not be used again (resampling without replacement). Within the same gene sets no duplicate genes are allowed, but the same genes can be used in different gene sets.
 
 ## P-value calculation
-The p-value for the GSVA score indicates the certainty of the GSVA score. There is tested if it is possible to also get the same score when you would calculate a score for a random gene set of the same size, by checking how often the score is better than when using random gene sets of the same size. 
+The p-value for the GSVA score indicates the chance of finding the same or a higher GSVA score (closer to -1 or 1) with a geneset of the same size in the same set of samples. A GSVA score closer to -1 or 1 indicates more concordantly activated genes (in one direction, either over- or under-expressed) than the expression of these genes in the other samples ([Hänzelmann _et al_. (2013)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-7)). This permutation test is done by measuring how often the same or higher score results is calculated for a random gene set of the same size as the original. 
 
-The GSVA score calculated with original gene sets will be called the original GSVA score. The GSVA scores that are from the resampling of the gene sets will be called the bootstrap GSVA scores. 
-
-With the bootstrap scores there is assessed if the bootstrap scores is the same or higher than the original scores. The amount of times the (absolute value of the) bootstrap scores is higher or equal to the original score is divided by the amount of bootstraps. This will result in a p-value score for the gene set. This p-value is already corrected for the amount of times the bootstrap done, because there is divided by the number of bootstraps.
-
+![pvalue calculation](https://raw.githubusercontent.com/thehyve/cbioportal-gsva-analysis/master/GSVA-pvalue-method.jpg)
